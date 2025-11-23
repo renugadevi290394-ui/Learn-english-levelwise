@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learn English Levelwise</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; max-width: 700px; margin: auto; background: #f0f8ff; padding: 20px; }
+    header { background: #3f8efc; color: white; padding: 15px; text-align: center; font-size: 1.8em; font-weight: bold; }
+    nav { margin: 20px 0; display: flex; justify-content: center; gap: 10px; }
+    nav button { padding: 10px 15px; border:none; background: #3f8efc; color:white; border-radius: 5px; cursor: pointer; }
+    nav button:hover { background: #2f6ecf; }
+    section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .phoneme { background: #d0e1ff; border-radius: 6px; padding: 10px; margin: 8px 0; cursor: pointer; }
+    .phoneme:hover { background: #a9c0ff; }
+    textarea { width: 100%; height: 60px; margin-top: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button.update { margin-top: 8px; background: #3f8efc; color:white; padding: 8px 12px; border:none; border-radius: 5px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>Learn English Levelwise</header>
+
+  <nav>
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('level1')">Level 1 - Phonetics</button>
+    <button onclick="showSection('admin')">Admin Panel</button>
+  </nav>
+
+  <section id="home" class="content-section">
+    <h2>Welcome to Learn English</h2>
+    <p>Select a level above to start learning.</p>
+  </section>
+
+  <section id="level1" class="content-section" style="display:none;">
+    <h2>Level 1: Phonetics - Click to hear</h2>
+    <div class="phoneme" data-speech="A as in apple, a">A /æ/</div>
+    <div class="phoneme" data-speech="E as in elephant, e">E /ɛ/</div>
+    <div class="phoneme" data-speech="I as in igloo, i">I /ɪ/</div>
+    <div class="phoneme" data-speech="O as in octopus, o">O /ɑ/</div>
+    <div class="phoneme" data-speech="U as in umbrella, u">U /ʌ/</div>
+    <p>Click a letter to hear its pronunciation.</p>
+  </section>
+
+  <section id="admin" class="content-section" style="display:none;">
+    <h2>Admin Panel - Update Level 1 Content</h2>
+    <label for="content-input">Enter new phonetics content (comma separated):</label>
+    <textarea id="content-input" placeholder="Example: A /æ/, E /ɛ/, I /ɪ/"></textarea>
+    <button class="update" onclick="updatePhonetics()">Update Content</button>
+  </section>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('Your browser does not support speech synthesis.');
+      }
+    }
+
+    document.getElementById('level1').addEventListener('click', e => {
+      if (e.target.classList.contains('phoneme')) {
+        speak(e.target.getAttribute('data-speech'));
+      }
+    });
+
+    function updatePhonetics() {
+      const input = document.getElementById('content-input').value.trim();
+      if (!input) { alert('Please enter content.'); return; }
+      const phonemes = input.split(',').map(item => item.trim());
+      const container = document.getElementById('level1');
+      const existingPhonemes = Array.from(container.querySelectorAll('.phoneme'));
+      existingPhonemes.forEach(p => p.remove());
+      phonemes.forEach(text => {
+        const mainText = text.split(',')[0] || text;
+        const dataSpeech = text;
+        const div = document.createElement('div');
+        div.className = 'phoneme';
+        div.textContent = mainText;
+        div.setAttribute('data-speech', dataSpeech);
+        container.insertBefore(div, container.querySelector('p'));
+      });
+      alert('Phonetics updated successfully!');
+      document.getElementById('content-input').value = '';
+      showSection('level1');
+    }
+  </script>
+</body>
+</html>
